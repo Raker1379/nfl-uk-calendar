@@ -1,122 +1,278 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useEffect, useState } from "react";
+import { getSchedule } from "./api";
+import "./App.css";
+
+const teams = [
+  { code: "ARI", name: "Arizona Cardinals" },
+  { code: "ATL", name: "Atlanta Falcons" },
+  { code: "BAL", name: "Baltimore Ravens" },
+  { code: "BUF", name: "Buffalo Bills" },
+  { code: "CAR", name: "Carolina Panthers" },
+  { code: "CHI", name: "Chicago Bears" },
+  { code: "CIN", name: "Cincinnati Bengals" },
+  { code: "CLE", name: "Cleveland Browns" },
+  { code: "DAL", name: "Dallas Cowboys" },
+  { code: "DEN", name: "Denver Broncos" },
+  { code: "DET", name: "Detroit Lions" },
+  { code: "GB", name: "Green Bay Packers" },
+  { code: "HOU", name: "Houston Texans" },
+  { code: "IND", name: "Indianapolis Colts" },
+  { code: "JAX", name: "Jacksonville Jaguars" },
+  { code: "KC", name: "Kansas City Chiefs" },
+  { code: "LV", name: "Las Vegas Raiders" },
+  { code: "LAC", name: "Los Angeles Chargers" },
+  { code: "LA", name: "Los Angeles Rams" },
+  { code: "MIA", name: "Miami Dolphins" },
+  { code: "MIN", name: "Minnesota Vikings" },
+  { code: "NE", name: "New England Patriots" },
+  { code: "NO", name: "New Orleans Saints" },
+  { code: "NYG", name: "New York Giants" },
+  { code: "NYJ", name: "New York Jets" },
+  { code: "PHI", name: "Philadelphia Eagles" },
+  { code: "PIT", name: "Pittsburgh Steelers" },
+  { code: "SEA", name: "Seattle Seahawks" },
+  { code: "SF", name: "San Francisco 49ers" },
+  { code: "TB", name: "Tampa Bay Buccaneers" },
+  { code: "TEN", name: "Tennessee Titans" },
+  { code: "WAS", name: "Washington Commanders" },
+];
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [games, setGames] = useState([]);
+  const [selectedWeek, setSelectedWeek] = useState(null);
+  const [selectedTeams, setSelectedTeams] = useState([]);
+  const [scoreDelay, setScoreDelay] = useState("after");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    getSchedule()
+      .then((data) => {
+        setGames(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setError("Unable to load the NFL schedule.");
+        setLoading(false);
+      });
+  }, []);
+
+  const weeks = [...new Set(games.map((game) => game.week))];
+
+  const now = new Date();
+
+  const scoreDelayHours =
+  scoreDelay === "12h"
+    ? 12
+    : scoreDelay === "24h"
+    ? 24
+    : 0;
+
+  const currentWeek =
+    weeks.find((week) =>
+      games
+        .filter((game) => game.week === week)
+        .some((game) => {
+          const kickoff = new Date(game.kickoff_utc);
+
+          return kickoff >= now;
+        })
+    ) || weeks[weeks.length - 1];
+
+  const activeWeek = selectedWeek ?? currentWeek;
+
+  const filteredGames = games.filter((game) => {
+    const matchesWeek =
+      activeWeek === "all" || game.week === activeWeek;
+
+    const matchesTeam =
+      selectedTeams.length === 0 ||
+      selectedTeams.includes(game.away_team) ||
+      selectedTeams.includes(game.home_team);
+
+    return matchesWeek && matchesTeam;
+  });
+
+  const shouldShowScore = (game) => {
+  if (
+    game.away_score === "" ||
+    game.home_score === "" ||
+    game.away_score == null ||
+    game.home_score == null
+  ) {
+    return false;
+  }
+
+  if (scoreDelay === "never") {
+    return false;
+  }
+
+  if (scoreDelay === "live") {
+    return true;
+  }
+
+  const kickoff = new Date(game.kickoff_utc);
+  const delayUntil = new Date(
+    kickoff.getTime() + scoreDelayHours * 60 * 60 * 1000
+  );
+
+  return now >= delayUntil;
+};
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="app">
+      <div className="header">
+        <h1>NFL UK Calendar</h1>
+        <p>2026 NFL Season</p>
+      </div>
+
+      <h2 className="section-title">NFL Fixtures</h2>
+
+      <select
+        value={activeWeek}
+        onChange={(e) => setSelectedWeek(e.target.value)}
+        className="week-select"
+      >
+        <option value="all">All Weeks</option>
+
+        {weeks.map((week) => (
+          <option key={week} value={week}>
+            Week {week}
+          </option>
+        ))}
+      </select>
+
+      <div className="team-selector">
+        <div className="team-selector-header">
+          <div>
+            <h3>Teams</h3>
+
+            <p className="team-count">
+              {selectedTeams.length === 0
+                ? "All teams"
+                : `${selectedTeams.length} team${
+                    selectedTeams.length === 1 ? "" : "s"
+                  } selected`}
+            </p>
+          </div>
+
+          <div className="team-actions">
+            <button
+              type="button"
+              onClick={() =>
+                setSelectedTeams(teams.map((team) => team.code))
+              }
+            >
+              Select all
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setSelectedTeams([])}
+            >
+              Clear
+            </button>
+          </div>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
+
+        <div className="team-list">
+          {teams.map((team) => (
+            <label className="team-option" key={team.code}>
+              <input
+                type="checkbox"
+                checked={selectedTeams.includes(team.code)}
+                onChange={() => {
+                  setSelectedTeams((current) =>
+                    current.includes(team.code)
+                      ? current.filter((code) => code !== team.code)
+                      : [...current, team.code]
+                  );
+                }}
+              />
+
+              <span>
+                <strong>{team.code}</strong> — {team.name}
+              </span>
+            </label>
+          ))}
         </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
+      </div>
+
+            <div className="score-settings">
+        <h3>Results & scores</h3>
+
+        <select
+          value={scoreDelay}
+          onChange={(e) => setScoreDelay(e.target.value)}
+          className="week-select"
         >
-          Count is {count}
-        </button>
-      </section>
+          <option value="after">After the game</option>
+          <option value="12h">12 hours after</option>
+          <option value="24h">24 hours after</option>
+          <option value="never">Never</option>
+          <option value="live">Live scores</option>
+        </select>
+      </div>
 
-      <div className="ticks"></div>
+      {loading && <p>Loading NFL fixtures...</p>}
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+      {error && <p>{error}</p>}
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      {!loading &&
+        !error &&
+        filteredGames.map((game) => (
+          <div className="game" key={game.game_id}>
+            <div className="game-date">
+              {new Date(game.kickoff_utc).toLocaleDateString(
+                "en-GB",
+                {
+                  weekday: "short",
+                  day: "numeric",
+                  month: "short",
+                  timeZone: "Europe/London",
+                }
+              )}
+            </div>
+
+            <div className="game-time">
+              {new Date(game.kickoff_utc).toLocaleTimeString(
+                "en-GB",
+                {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  timeZone: "Europe/London",
+                }
+              )}
+            </div>
+
+            <div className="teams">
+              <div className="team">
+                <strong>{game.away_team}</strong>
+                <span>Away</span>
+              </div>
+
+              <div className="at">@</div>
+
+              <div className="team">
+                <strong>{game.home_team}</strong>
+                <span>Home</span>
+              </div>
+            </div>
+
+            {shouldShowScore(game) ? (
+              <div className="score">
+                {game.away_score} - {game.home_score}
+              </div>
+            ) : scoreDelay === "never" ? (
+              <div className="status">Score hidden</div>
+            ) : (
+              <div className="status">Upcoming</div>
+            )}
+          </div>
+        ))}
+    </div>
+  );
 }
 
-export default App
+export default App;
