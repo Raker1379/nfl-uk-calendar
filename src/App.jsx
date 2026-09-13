@@ -38,10 +38,32 @@ const teams = [
 ];
 
 function App() {
+    const subscribeToCalendar = () => {
+    const params = new URLSearchParams();
+
+    if (selectedTeams.length > 0) {
+      params.set("teams", selectedTeams.join(","));
+    }
+
+    params.set("delay", scoreDelay);
+    params.set("weekly", weeklyReport ? "true" : "false");
+
+    const calendarUrl =
+      `${window.location.origin}/api/calendar?${params.toString()}`;
+
+    const webcalUrl = calendarUrl.replace(
+      /^https?:\/\//,
+      "webcal://"
+    );
+
+    window.location.href = webcalUrl;
+  };
   const [games, setGames] = useState([]);
   const [selectedWeek, setSelectedWeek] = useState(null);
   const [selectedTeams, setSelectedTeams] = useState([]);
   const [scoreDelay, setScoreDelay] = useState("after");
+  const [weeklyReport, setWeeklyReport] = useState(false);
+  const [showSchedule, setShowSchedule] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -63,11 +85,11 @@ function App() {
   const now = new Date();
 
   const scoreDelayHours =
-  scoreDelay === "12h"
-    ? 12
-    : scoreDelay === "24h"
-    ? 24
-    : 0;
+    scoreDelay === "12h"
+      ? 12
+      : scoreDelay === "24h"
+      ? 24
+      : 0;
 
   const currentWeek =
     weeks.find((week) =>
@@ -75,7 +97,6 @@ function App() {
         .filter((game) => game.week === week)
         .some((game) => {
           const kickoff = new Date(game.kickoff_utc);
-
           return kickoff >= now;
         })
     ) || weeks[weeks.length - 1];
@@ -95,30 +116,32 @@ function App() {
   });
 
   const shouldShowScore = (game) => {
-  if (
-    game.away_score === "" ||
-    game.home_score === "" ||
-    game.away_score == null ||
-    game.home_score == null
-  ) {
-    return false;
-  }
+    if (
+      game.away_score === "" ||
+      game.home_score === "" ||
+      game.away_score == null ||
+      game.home_score == null
+    ) {
+      return false;
+    }
 
-  if (scoreDelay === "never") {
-    return false;
-  }
+    if (scoreDelay === "never") {
+      return false;
+    }
 
-  if (scoreDelay === "live") {
-    return true;
-  }
+    if (scoreDelay === "live") {
+      return true;
+    }
 
-  const kickoff = new Date(game.kickoff_utc);
-  const delayUntil = new Date(
-    kickoff.getTime() + scoreDelayHours * 60 * 60 * 1000
-  );
+    const kickoff = new Date(game.kickoff_utc);
 
-  return now >= delayUntil;
-};
+    const delayUntil = new Date(
+      kickoff.getTime() +
+        scoreDelayHours * 60 * 60 * 1000
+    );
+
+    return now >= delayUntil;
+  };
 
   return (
     <div className="app">
@@ -127,21 +150,13 @@ function App() {
         <p>2026 NFL Season</p>
       </div>
 
-      <h2 className="section-title">NFL Fixtures</h2>
+      <h2 className="section-title">
+        Build your NFL calendar
+      </h2>
 
-      <select
-        value={activeWeek}
-        onChange={(e) => setSelectedWeek(e.target.value)}
-        className="week-select"
-      >
-        <option value="all">All Weeks</option>
-
-        {weeks.map((week) => (
-          <option key={week} value={week}>
-            Week {week}
-          </option>
-        ))}
-      </select>
+      <p className="intro-text">
+        Choose the teams you want to follow.
+      </p>
 
       <div className="team-selector">
         <div className="team-selector-header">
@@ -152,7 +167,9 @@ function App() {
               {selectedTeams.length === 0
                 ? "All teams"
                 : `${selectedTeams.length} team${
-                    selectedTeams.length === 1 ? "" : "s"
+                    selectedTeams.length === 1
+                      ? ""
+                      : "s"
                   } selected`}
             </p>
           </div>
@@ -161,7 +178,9 @@ function App() {
             <button
               type="button"
               onClick={() =>
-                setSelectedTeams(teams.map((team) => team.code))
+                setSelectedTeams(
+                  teams.map((team) => team.code)
+                )
               }
             >
               Select all
@@ -178,99 +197,203 @@ function App() {
 
         <div className="team-list">
           {teams.map((team) => (
-            <label className="team-option" key={team.code}>
+            <label
+              className="team-option"
+              key={team.code}
+            >
               <input
                 type="checkbox"
-                checked={selectedTeams.includes(team.code)}
+                checked={selectedTeams.includes(
+                  team.code
+                )}
                 onChange={() => {
                   setSelectedTeams((current) =>
                     current.includes(team.code)
-                      ? current.filter((code) => code !== team.code)
+                      ? current.filter(
+                          (code) => code !== team.code
+                        )
                       : [...current, team.code]
                   );
                 }}
               />
 
               <span>
-                <strong>{team.code}</strong> — {team.name}
+                <strong>{team.code}</strong> —{" "}
+                {team.name}
               </span>
             </label>
           ))}
         </div>
       </div>
 
-            <div className="score-settings">
+      <div className="score-settings">
         <h3>Results & scores</h3>
+
+        <p className="settings-description">
+          Choose when scores appear in your calendar.
+          Perfect if you want to avoid spoilers.
+        </p>
 
         <select
           value={scoreDelay}
-          onChange={(e) => setScoreDelay(e.target.value)}
+          onChange={(e) =>
+            setScoreDelay(e.target.value)
+          }
           className="week-select"
         >
-          <option value="after">After the game</option>
-          <option value="12h">12 hours after</option>
-          <option value="24h">24 hours after</option>
-          <option value="never">Never</option>
-          <option value="live">Live scores</option>
+          <option value="after">
+            After the game
+          </option>
+          <option value="12h">
+            12 hours after
+          </option>
+          <option value="24h">
+            24 hours after
+          </option>
+          <option value="never">
+            Never
+          </option>
+          <option value="live">
+            Live scores
+          </option>
         </select>
       </div>
 
-      {loading && <p>Loading NFL fixtures...</p>}
+      <div className="score-settings">
+        <h3>Weekly results report</h3>
 
-      {error && <p>{error}</p>}
+        <p className="settings-description">
+          Add a summary of the week's results to your calendar.
+        </p>
 
-      {!loading &&
-        !error &&
-        filteredGames.map((game) => (
-          <div className="game" key={game.game_id}>
-            <div className="game-date">
-              {new Date(game.kickoff_utc).toLocaleDateString(
-                "en-GB",
-                {
-                  weekday: "short",
-                  day: "numeric",
-                  month: "short",
-                  timeZone: "Europe/London",
-                }
-              )}
-            </div>
+        <select
+          value={weeklyReport ? "on" : "off"}
+          onChange={(e) =>
+            setWeeklyReport(e.target.value === "on")
+          }
+          className="week-select"
+        >
+          <option value="off">Off</option>
+          <option value="on">On</option>
+        </select>
+      </div>
 
-            <div className="game-time">
-              {new Date(game.kickoff_utc).toLocaleTimeString(
-                "en-GB",
-                {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  timeZone: "Europe/London",
-                }
-              )}
-            </div>
+      <button
+        type="button"
+        className="subscribe-button"
+        onClick={subscribeToCalendar}
+      >
+        Subscribe to my calendar
+      </button>
 
-            <div className="teams">
-              <div className="team">
-                <strong>{game.away_team}</strong>
-                <span>Away</span>
+      <button
+        type="button"
+        className="schedule-button"
+        onClick={() =>
+          setShowSchedule((current) => !current)
+        }
+      >
+        {showSchedule
+          ? "Hide schedule"
+          : "View schedule"}
+      </button>
+
+      {showSchedule && (
+        <>
+          <select
+            value={activeWeek}
+            onChange={(e) =>
+              setSelectedWeek(e.target.value)
+            }
+            className="week-select"
+          >
+            <option value="all">
+              All Weeks
+            </option>
+
+            {weeks.map((week) => (
+              <option key={week} value={week}>
+                Week {week}
+              </option>
+            ))}
+          </select>
+
+          {loading && (
+            <p>Loading NFL fixtures...</p>
+          )}
+
+          {error && <p>{error}</p>}
+
+          {!loading &&
+            !error &&
+            filteredGames.map((game) => (
+              <div
+                className="game"
+                key={game.game_id}
+              >
+                <div className="game-date">
+                  {new Date(
+                    game.kickoff_utc
+                  ).toLocaleDateString(
+                    "en-GB",
+                    {
+                      weekday: "short",
+                      day: "numeric",
+                      month: "short",
+                      timeZone: "Europe/London",
+                    }
+                  )}
+                </div>
+
+                <div className="game-time">
+                  {new Date(
+                    game.kickoff_utc
+                  ).toLocaleTimeString(
+                    "en-GB",
+                    {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      timeZone: "Europe/London",
+                    }
+                  )}
+                </div>
+
+                <div className="teams">
+                  <div className="team">
+                    <strong>
+                      {game.away_team}
+                    </strong>
+                    <span>Away</span>
+                  </div>
+
+                  <div className="at">@</div>
+
+                  <div className="team">
+                    <strong>
+                      {game.home_team}
+                    </strong>
+                    <span>Home</span>
+                  </div>
+                </div>
+
+                {shouldShowScore(game) ? (
+                  <div className="score">
+                    {game.away_score} -{" "}
+                    {game.home_score}
+                  </div>
+                ) : scoreDelay === "never" ? (
+                  <div className="status">
+                    Score hidden
+                  </div>
+                ) : (
+                  <div className="status">
+                    Upcoming
+                  </div>
+                )}
               </div>
-
-              <div className="at">@</div>
-
-              <div className="team">
-                <strong>{game.home_team}</strong>
-                <span>Home</span>
-              </div>
-            </div>
-
-            {shouldShowScore(game) ? (
-              <div className="score">
-                {game.away_score} - {game.home_score}
-              </div>
-            ) : scoreDelay === "never" ? (
-              <div className="status">Score hidden</div>
-            ) : (
-              <div className="status">Upcoming</div>
-            )}
-          </div>
-        ))}
+            ))}
+        </>
+      )}
     </div>
   );
 }

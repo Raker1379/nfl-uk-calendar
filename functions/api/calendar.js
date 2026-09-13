@@ -48,6 +48,24 @@ export async function onRequest(context) {
   const weeklyReport =
     url.searchParams.get("weekly") === "true";
 
+    const selectedTeamsParam =
+        url.searchParams.get("teams");
+
+    const selectedTeams = selectedTeamsParam
+        ? selectedTeamsParam.split(",")
+        : [];
+
+const selectedTeamNames = selectedTeams
+  .map((code) => getTeamName(code));
+
+    let calendarName = "NFL UK Calendar";
+
+if (selectedTeamNames.length === 1) {
+  calendarName = `NFL UK Calendar — ${selectedTeamNames[0]}`;
+} else if (selectedTeamNames.length > 1) {
+  calendarName = `NFL UK Calendar — ${selectedTeamNames.length} Teams`;
+}
+
   const response = await fetch(
     "https://github.com/nflverse/nflverse-data/releases/download/schedules/games.csv"
   );
@@ -76,6 +94,16 @@ export async function onRequest(context) {
 
   const seasonGames = games
     .filter((game) => game.season === "2026")
+    .filter((game) => {
+        if (selectedTeams.length === 0) {
+        return true;
+        }
+
+        return (
+        selectedTeams.includes(game.away_team) ||
+        selectedTeams.includes(game.home_team)
+        );
+    })
     .map((game) => {
       const kickoff = DateTime.fromISO(
         `${game.gameday}T${game.gametime}`,
@@ -277,7 +305,7 @@ export async function onRequest(context) {
     "PRODID:-//NFL UK Calendar//EN",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
-    "X-WR-CALNAME:NFL UK Calendar",
+    `X-WR-CALNAME:${calendarName}`,
     ...events,
     "END:VCALENDAR",
   ].join("\r\n");

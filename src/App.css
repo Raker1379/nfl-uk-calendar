@@ -246,3 +246,51 @@ body {
   font-size: 13px;
   color: #6b7280;
 }
+
+.intro-text {
+  color: #6b7280;
+  margin-top: -4px;
+  margin-bottom: 20px;
+}
+
+.schedule-button {
+  width: 100%;
+  border: none;
+  background: #111827;
+  color: white;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.schedule-button:hover {
+  opacity: 0.9;
+}
+
+.settings-description {
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-top: -6px;
+  margin-bottom: 12px;
+}
+
+.subscribe-button {
+  width: 100%;
+  border: none;
+  background: #2563eb;
+  color: white;
+  padding: 15px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+
+.subscribe-button:hover {
+  opacity: 0.9;
+}
