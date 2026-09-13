@@ -294,3 +294,14 @@ body {
 .subscribe-button:hover {
   opacity: 0.9;
 }
+
+select.week-select {
+  color: #111827;
+  background: white;
+  border: 1px solid #d1d5db;
+}
+
+select.week-select option {
+  color: #111827;
+  background: white;
+}
