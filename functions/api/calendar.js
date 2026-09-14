@@ -1,3 +1,4 @@
+
 import { DateTime } from "luxon";
 
 const teamNames = {
@@ -48,23 +49,24 @@ export async function onRequest(context) {
   const weeklyReport =
     url.searchParams.get("weekly") === "true";
 
-    const selectedTeamsParam =
-        url.searchParams.get("teams");
+  const selectedTeamsParam =
+    url.searchParams.get("teams");
 
-    const selectedTeams = selectedTeamsParam
-        ? selectedTeamsParam.split(",")
-        : [];
+  const selectedTeams = selectedTeamsParam
+    ? selectedTeamsParam.split(",")
+    : [];
 
-const selectedTeamNames = selectedTeams
-  .map((code) => getTeamName(code));
+  const selectedTeamNames = selectedTeams.map((code) =>
+    getTeamName(code)
+  );
 
-    let calendarName = "NFL UK Calendar";
+  let calendarName = "NFL UK Calendar";
 
-if (selectedTeamNames.length === 1) {
-  calendarName = `NFL UK Calendar — ${selectedTeamNames[0]}`;
-} else if (selectedTeamNames.length > 1) {
-  calendarName = `NFL UK Calendar — ${selectedTeamNames.length} Teams`;
-}
+  if (selectedTeamNames.length === 1) {
+    calendarName = `NFL UK Calendar — ${selectedTeamNames[0]}`;
+  } else if (selectedTeamNames.length > 1) {
+    calendarName = `NFL UK Calendar — ${selectedTeamNames.length} Teams`;
+  }
 
   const response = await fetch(
     "https://github.com/nflverse/nflverse-data/releases/download/schedules/games.csv"
@@ -92,18 +94,15 @@ if (selectedTeamNames.length === 1) {
     return game;
   });
 
-  const seasonGames = games
-    .filter((game) => game.season === "2026")
-    .filter((game) => {
-        if (selectedTeams.length === 0) {
-        return true;
-        }
+  /*
+    ALL 2026 NFL GAMES
 
-        return (
-        selectedTeams.includes(game.away_team) ||
-        selectedTeams.includes(game.home_team)
-        );
-    })
+    This is the complete league schedule and is used
+    for the weekly results report.
+  */
+
+  const allSeasonGames = games
+    .filter((game) => game.season === "2026")
     .map((game) => {
       const kickoff = DateTime.fromISO(
         `${game.gameday}T${game.gametime}`,
@@ -122,6 +121,28 @@ if (selectedTeamNames.length === 1) {
         new Date(a.kickoff_utc) -
         new Date(b.kickoff_utc)
     );
+
+  /*
+    PERSONALISED GAMES
+
+    These are the games shown as normal calendar
+    events. If no teams are selected, all teams are shown.
+  */
+
+  const seasonGames = allSeasonGames.filter((game) => {
+    if (selectedTeams.length === 0) {
+      return true;
+    }
+
+    return (
+      selectedTeams.includes(game.away_team) ||
+      selectedTeams.includes(game.home_team)
+    );
+  });
+
+  /*
+    NORMAL CALENDAR EVENTS
+  */
 
   const events = seasonGames.map((game) => {
     const start = DateTime.fromISO(game.kickoff_utc);
@@ -180,22 +201,24 @@ if (selectedTeamNames.length === 1) {
   });
 
   /*
-    WEEKLY REPORTS
+    WEEKLY LEAGUE-WIDE REPORTS
 
-    A weekly report is only created once the final
-    scheduled game of that week has finished.
+    The report uses ALL NFL games, regardless of the
+    teams selected by the user.
 
-    Individual scores inside the report still honour
-    the selected delay setting.
+    The report appears 4 hours after the final scheduled
+    game of that week kicks off.
   */
 
   if (weeklyReport && scoreDelay !== "never") {
     const weeks = [
-      ...new Set(seasonGames.map((game) => game.week)),
+      ...new Set(
+        allSeasonGames.map((game) => game.week)
+      ),
     ];
 
     weeks.forEach((week) => {
-      const weekGames = seasonGames.filter(
+      const weekGames = allSeasonGames.filter(
         (game) => game.week === week
       );
 
@@ -203,30 +226,35 @@ if (selectedTeamNames.length === 1) {
         return;
       }
 
-      const lastGame =
+            const lastGame =
         weekGames[weekGames.length - 1];
+
+      /*
+        Only create the weekly report once the final
+        scheduled game has an actual result.
+
+        This is more reliable than using a fixed number
+        of hours after kickoff because games can be delayed
+        or run longer than expected.
+      */
+
+      const lastGameHasScore =
+        lastGame.away_score !== "" &&
+        lastGame.home_score !== "" &&
+        lastGame.away_score != null &&
+        lastGame.home_score != null;
+
+      if (!lastGameHasScore) {
+        return;
+      }
 
       const finalGameKickoff = DateTime.fromISO(
         lastGame.kickoff_utc
       );
 
-      /*
-        The weekly report becomes available 4 hours
-        after the final scheduled game kicks off.
-      */
-
       const reportStart = finalGameKickoff.plus({
         hours: 4,
       });
-
-      /*
-        Don't create the report until the final game
-        has actually finished.
-      */
-
-      if (DateTime.utc() < reportStart.toUTC()) {
-        return;
-      }
 
       const weekResults = weekGames
         .filter((game) => {
@@ -299,6 +327,10 @@ if (selectedTeamNames.length === 1) {
     });
   }
 
+  /*
+    BUILD CALENDAR
+  */
+
   const ics = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
@@ -318,3 +350,4 @@ if (selectedTeamNames.length === 1) {
     },
   });
 }
+
