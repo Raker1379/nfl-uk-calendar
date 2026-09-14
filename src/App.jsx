@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { getSchedule } from "./api";
 import "./App.css";
@@ -38,34 +39,51 @@ const teams = [
 ];
 
 function App() {
-    const subscribeToCalendar = () => {
-    const params = new URLSearchParams();
-
-    if (selectedTeams.length > 0) {
-      params.set("teams", selectedTeams.join(","));
-    }
-
-    params.set("delay", scoreDelay);
-    params.set("weekly", weeklyReport ? "true" : "false");
-
-    const calendarUrl =
-      `${window.location.origin}/api/calendar?${params.toString()}`;
-
-    const webcalUrl = calendarUrl.replace(
-      /^https?:\/\//,
-      "webcal://"
-    );
-
-    window.location.href = webcalUrl;
-  };
   const [games, setGames] = useState([]);
   const [selectedWeek, setSelectedWeek] = useState(null);
   const [selectedTeams, setSelectedTeams] = useState([]);
   const [scoreDelay, setScoreDelay] = useState("after");
   const [weeklyReport, setWeeklyReport] = useState(false);
   const [showSchedule, setShowSchedule] = useState(false);
+  const [showCalendarOptions, setShowCalendarOptions] =
+    useState(false);
+  const [calendarUrl, setCalendarUrl] = useState("");
+  const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const subscribeToCalendar = () => {
+  const params = new URLSearchParams();
+
+  if (selectedTeams.length > 0) {
+    params.set("teams", selectedTeams.join(","));
+  }
+
+  params.set("delay", scoreDelay);
+  params.set(
+    "weekly",
+    weeklyReport ? "true" : "false"
+  );
+
+  const calendarUrl =
+    `${window.location.origin}/api/calendar?${params.toString()}`;
+
+  const webcalUrl = calendarUrl.replace(
+    /^https?:\/\//,
+    "webcal://"
+  );
+
+  const isAndroid =
+    /Android/i.test(navigator.userAgent);
+
+  if (isAndroid) {
+    setCalendarUrl(calendarUrl);
+    setShowCalendarOptions(true);
+    return;
+  }
+
+  window.location.href = webcalUrl;
+};
 
   useEffect(() => {
     getSchedule()
@@ -80,7 +98,9 @@ function App() {
       });
   }, []);
 
-  const weeks = [...new Set(games.map((game) => game.week))];
+  const weeks = [
+    ...new Set(games.map((game) => game.week)),
+  ];
 
   const now = new Date();
 
@@ -96,16 +116,21 @@ function App() {
       games
         .filter((game) => game.week === week)
         .some((game) => {
-          const kickoff = new Date(game.kickoff_utc);
+          const kickoff = new Date(
+            game.kickoff_utc
+          );
+
           return kickoff >= now;
         })
     ) || weeks[weeks.length - 1];
 
-  const activeWeek = selectedWeek ?? currentWeek;
+  const activeWeek =
+    selectedWeek ?? currentWeek;
 
   const filteredGames = games.filter((game) => {
     const matchesWeek =
-      activeWeek === "all" || game.week === activeWeek;
+      activeWeek === "all" ||
+      game.week === activeWeek;
 
     const matchesTeam =
       selectedTeams.length === 0 ||
@@ -133,7 +158,9 @@ function App() {
       return true;
     }
 
-    const kickoff = new Date(game.kickoff_utc);
+    const kickoff = new Date(
+      game.kickoff_utc
+    );
 
     const delayUntil = new Date(
       kickoff.getTime() +
@@ -188,7 +215,9 @@ function App() {
 
             <button
               type="button"
-              onClick={() => setSelectedTeams([])}
+              onClick={() =>
+                setSelectedTeams([])
+              }
             >
               Clear
             </button>
@@ -210,16 +239,20 @@ function App() {
                   setSelectedTeams((current) =>
                     current.includes(team.code)
                       ? current.filter(
-                          (code) => code !== team.code
+                          (code) =>
+                            code !== team.code
                         )
-                      : [...current, team.code]
+                      : [
+                          ...current,
+                          team.code,
+                        ]
                   );
                 }}
               />
 
               <span>
-                <strong>{team.code}</strong> —{" "}
-                {team.name}
+                <strong>{team.code}</strong>{" "}
+                — {team.name}
               </span>
             </label>
           ))}
@@ -244,15 +277,19 @@ function App() {
           <option value="after">
             After the game
           </option>
+
           <option value="12h">
             12 hours after
           </option>
+
           <option value="24h">
             24 hours after
           </option>
+
           <option value="never">
             Never
           </option>
+
           <option value="live">
             Live scores
           </option>
@@ -263,13 +300,16 @@ function App() {
         <h3>Weekly results report</h3>
 
         <p className="settings-description">
-          Add a summary of the week's results to your calendar.
+          Add a summary of the week's results to your
+          calendar.
         </p>
 
         <select
           value={weeklyReport ? "on" : "off"}
           onChange={(e) =>
-            setWeeklyReport(e.target.value === "on")
+            setWeeklyReport(
+              e.target.value === "on"
+            )
           }
           className="week-select"
         >
@@ -281,10 +321,67 @@ function App() {
       <button
         type="button"
         className="subscribe-button"
-        onClick={subscribeToCalendar}
+        onClick={() => {
+          navigator.clipboard.writeText(calendarUrl);
+          setCopied(true);
+
+          setTimeout(() => {
+            setCopied(false);
+          }, 2000);
+        }}
       >
-        Subscribe to my calendar
+        {copied ? "Copied!" : "Copy calendar link"}
       </button>
+
+      <p className="calendar-help">
+        Works with Apple Calendar, Google Calendar
+        and other calendar apps.
+      </p>
+
+      {showCalendarOptions && (
+        <div className="calendar-options">
+          <h3>Add to Google Calendar</h3>
+
+          <p>
+            Google Calendar requires calendar subscriptions
+            to be added from the web.
+          </p>
+
+          <ol>
+            <li>Copy your personalised calendar link.</li>
+            <li>Open Google Calendar in a web browser.</li>
+            <li>Choose Other calendars → + → From URL.</li>
+            <li>Paste the link and add the calendar.</li>
+          </ol>
+
+          <input
+            type="text"
+            value={calendarUrl}
+            readOnly
+            className="calendar-url"
+          />
+
+          <button
+            type="button"
+            className="subscribe-button"
+            onClick={() =>
+              navigator.clipboard.writeText(calendarUrl)
+            }
+          >
+            Copy calendar link
+          </button>
+
+          <button
+            type="button"
+            className="close-button"
+            onClick={() =>
+              setShowCalendarOptions(false)
+            }
+          >
+            Close
+          </button>
+        </div>
+      )}
 
       <button
         type="button"
@@ -312,7 +409,10 @@ function App() {
             </option>
 
             {weeks.map((week) => (
-              <option key={week} value={week}>
+              <option
+                key={week}
+                value={week}
+              >
                 Week {week}
               </option>
             ))}
@@ -363,15 +463,19 @@ function App() {
                     <strong>
                       {game.away_team}
                     </strong>
+
                     <span>Away</span>
                   </div>
 
-                  <div className="at">@</div>
+                  <div className="at">
+                    @
+                  </div>
 
                   <div className="team">
                     <strong>
                       {game.home_team}
                     </strong>
+
                     <span>Home</span>
                   </div>
                 </div>
@@ -399,3 +503,4 @@ function App() {
 }
 
 export default App;
+

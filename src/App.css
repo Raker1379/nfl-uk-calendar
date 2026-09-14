@@ -305,3 +305,49 @@ select.week-select option {
   color: #111827;
   background: white;
 }
+
+.calendar-help {
+  text-align: center;
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0 0 20px;
+}
+
+.calendar-options {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 20px;
+}
+
+.calendar-options h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+.calendar-options p {
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.calendar-options ol {
+  padding-left: 20px;
+  color: #374151;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.close-button {
+  width: 100%;
+  border: none;
+  background: #f3f4f6;
+  color: #111827;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
