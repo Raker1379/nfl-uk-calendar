@@ -318,20 +318,40 @@ function App() {
         </select>
       </div>
 
-      <button
-        type="button"
-        className="subscribe-button"
-        onClick={() => {
-          navigator.clipboard.writeText(calendarUrl);
-          setCopied(true);
+     <a
+  href={
+    (() => {
+      const params = new URLSearchParams();
 
-          setTimeout(() => {
-            setCopied(false);
-          }, 2000);
-        }}
-      >
-        {copied ? "Copied!" : "Copy calendar link"}
-      </button>
+      if (selectedTeams.length > 0) {
+        params.set(
+          "teams",
+          selectedTeams.join(",")
+        );
+      }
+
+      params.set("delay", scoreDelay);
+      params.set(
+        "weekly",
+        weeklyReport ? "true" : "false"
+      );
+
+      return `webcal://${window.location.host}/api/calendar?${params.toString()}`;
+    })()
+  }
+  className="subscribe-button"
+  onClick={(e) => {
+    const isAndroid =
+      /Android/i.test(navigator.userAgent);
+
+    if (isAndroid) {
+      e.preventDefault();
+      subscribeToCalendar();
+    }
+  }}
+>
+  Add to my calendar
+</a>
 
       <p className="calendar-help">
         Works with Apple Calendar, Google Calendar
