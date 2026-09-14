@@ -351,3 +351,10 @@ select.week-select option {
   font-weight: 700;
   cursor: pointer;
 }
+
+.subscribe-button {
+  display: block;
+  box-sizing: border-box;
+  text-align: center;
+  text-decoration: none;
+}
