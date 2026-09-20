@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getSchedule } from "./api";
+import Privacy from "./Privacy";
 import "./App.css";
 
 const teams = [
@@ -85,6 +86,7 @@ function App() {
     }
 
     params.set("delay", scoreDelay);
+
     params.set(
       "weekly",
       weeklyReport ? "true" : "false"
@@ -194,6 +196,11 @@ function App() {
 
     return now >= delayUntil;
   };
+
+  // Show the privacy page without changing the main app.
+  if (window.location.pathname === "/privacy") {
+    return <Privacy />;
+  }
 
   return (
     <div className="app">
@@ -383,18 +390,16 @@ function App() {
               <span>/ year</span>
             </div>
 
-            {!isPremium && (
-              <button
-                type="button"
-                className="premium-card-button"
-                onClick={() => {
-                  trackEvent("premium_card_unlock");
-                  setIsPremium(true);
-                }}
-              >
-                Unlock Premium
-              </button>
-            )}
+            <button
+              type="button"
+              className="premium-card-button"
+              onClick={() => {
+                trackEvent("premium_card_unlock");
+                setIsPremium(true);
+              }}
+            >
+              Unlock Premium
+            </button>
           </div>
         )}
 
@@ -417,15 +422,19 @@ function App() {
               <option value="after">
                 After the game
               </option>
+
               <option value="12h">
                 12 hours after
               </option>
+
               <option value="24h">
                 24 hours after
               </option>
+
               <option value="never">
                 Never
               </option>
+
               <option value="live">
                 Live scores
               </option>
@@ -433,6 +442,7 @@ function App() {
           ) : (
             <div className="premium-feature-locked">
               🔒 Premium feature
+
               <span>
                 Scores and results are available with Premium.
               </span>
@@ -464,6 +474,7 @@ function App() {
           ) : (
             <div className="premium-feature-locked">
               🔒 Premium feature
+
               <span>
                 Weekly results reports are available with Premium.
               </span>
@@ -502,12 +513,15 @@ function App() {
               <li>
                 Copy your personalised calendar link.
               </li>
+
               <li>
                 Open Google Calendar in a web browser.
               </li>
+
               <li>
                 Choose Other calendars → + → From URL.
               </li>
+
               <li>
                 Paste the link and add the calendar.
               </li>
@@ -682,6 +696,10 @@ function App() {
 
         <p>
           Schedule data provided by nflverse.
+        </p>
+
+        <p>
+          <a href="/privacy">Privacy Policy</a>
         </p>
       </footer>
 
