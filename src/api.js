@@ -25,7 +25,7 @@ export async function getSchedule() {
   });
 
 return games
-  .filter((game) => game.season === "2026")
+  .filter((game) => String(game.season) === "2026")
   .map((game) => {
     const kickoff = DateTime.fromISO(
       `${game.gameday}T${game.gametime}`,

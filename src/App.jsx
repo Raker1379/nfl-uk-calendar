@@ -38,6 +38,7 @@ const teams = [
 ];
 
 function App() {
+  const [isPremium, setIsPremium] = useState(true);
   const [games, setGames] = useState([]);
   const [selectedWeek, setSelectedWeek] = useState(null);
   const [selectedTeams, setSelectedTeams] = useState([]);
@@ -87,11 +88,12 @@ function App() {
   useEffect(() => {
     getSchedule()
       .then((data) => {
+        console.log("SCHEDULE LOADED:", data);
         setGames(data);
         setLoading(false);
       })
       .catch((err) => {
-        console.error(err);
+        console.error("SCHEDULE ERROR:", err);
         setError("Unable to load the NFL schedule.");
         setLoading(false);
       });
@@ -127,6 +129,7 @@ function App() {
     selectedWeek ?? currentWeek;
 
   const filteredGames = games.filter((game) => {
+    
     const matchesWeek =
       activeWeek === "all" ||
       game.week === activeWeek;
@@ -210,6 +213,10 @@ function App() {
           subscribe to your personalised calendar.
         </p>
 
+        <div className="plan-badge">
+          {isPremium ? "Premium" : "Free"}
+        </div>
+
         <div className="team-selector">
           <div className="team-selector-header">
             <div>
@@ -231,7 +238,9 @@ function App() {
                 type="button"
                 onClick={() =>
                   setSelectedTeams(
-                    teams.map((team) => team.code)
+                    isPremium
+                      ? teams.map((team) => team.code)
+                      : teams.slice(0, 1).map((team) => team.code)
                   )
                 }
               >
@@ -261,17 +270,19 @@ function App() {
                     team.code
                   )}
                   onChange={() => {
-                    setSelectedTeams((current) =>
-                      current.includes(team.code)
-                        ? current.filter(
-                            (code) =>
-                              code !== team.code
-                          )
-                        : [
-                            ...current,
-                            team.code,
-                          ]
-                    );
+                    setSelectedTeams((current) => {
+                      if (current.includes(team.code)) {
+                        return current.filter(
+                          (code) => code !== team.code
+                        );
+                      }
+
+                      if (!isPremium && current.length >= 1) {
+                        return current;
+                      }
+
+                      return [...current, team.code];
+                    });
                   }}
                 />
 
