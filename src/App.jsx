@@ -38,7 +38,9 @@ const teams = [
 ];
 
 function App() {
-  const [isPremium, setIsPremium] = useState(true);
+  const [isPremium, setIsPremium] = useState(false);
+  const [showPremiumMessage, setShowPremiumMessage] =
+  useState(false);
   const [games, setGames] = useState([]);
   const [selectedWeek, setSelectedWeek] = useState(null);
   const [selectedTeams, setSelectedTeams] = useState([]);
@@ -88,7 +90,6 @@ function App() {
   useEffect(() => {
     getSchedule()
       .then((data) => {
-        console.log("SCHEDULE LOADED:", data);
         setGames(data);
         setLoading(false);
       })
@@ -213,7 +214,11 @@ function App() {
           subscribe to your personalised calendar.
         </p>
 
-        <div className="plan-badge">
+        <div
+          className={`plan-badge ${
+            isPremium ? "premium" : ""
+          }`}
+        >
           {isPremium ? "Premium" : "Free"}
         </div>
 
@@ -236,13 +241,16 @@ function App() {
             <div className="team-actions">
               <button
                 type="button"
-                onClick={() =>
+                onClick={() => {
+                  if (!isPremium) {
+                    setShowPremiumMessage(true);
+                    return;
+                  }
+
                   setSelectedTeams(
-                    isPremium
-                      ? teams.map((team) => team.code)
-                      : teams.slice(0, 1).map((team) => team.code)
-                  )
-                }
+                    teams.map((team) => team.code)
+                  );
+                }}
               >
                 Select all
               </button>
@@ -278,8 +286,9 @@ function App() {
                       }
 
                       if (!isPremium && current.length >= 1) {
-                        return current;
-                      }
+                            setShowPremiumMessage(true);
+                            return current;
+                          }
 
                       return [...current, team.code];
                     });
@@ -293,39 +302,111 @@ function App() {
               </label>
             ))}
           </div>
+          {showPremiumMessage && !isPremium && (
+            <div className="premium-message">
+              <strong>Unlock Premium</strong>
+
+              <p>
+                Follow multiple teams or the whole NFL with
+                Premium.
+              </p>
+
+              <button
+                type="button"
+                className="premium-button"
+                onClick={() => setIsPremium(true)}
+              >
+                Unlock Premium
+              </button>
+
+              <button
+                type="button"
+                className="premium-later-button"
+                onClick={() => setShowPremiumMessage(false)}
+              >
+                Maybe later
+              </button>
+            </div>
+          )}
         </div>
+
+        {!isPremium && (
+        <div className="premium-card">
+          <div className="premium-card-badge">
+            PREMIUM
+          </div>
+
+          <h3>NFL Calendar Premium</h3>
+
+          <p className="premium-card-intro">
+            Follow the NFL your way.
+          </p>
+
+          <div className="premium-benefits">
+            <div>✓ Multiple teams</div>
+            <div>✓ Full NFL calendar</div>
+            <div>✓ Scores & results</div>
+            <div>✓ Weekly results reports</div>
+          </div>
+
+          <div className="premium-price">
+            <strong>£9.99</strong>
+            <span>/ year</span>
+          </div>
+
+          {!isPremium && (
+            <button
+              type="button"
+              className="premium-card-button"
+              onClick={() => setIsPremium(true)}
+            >
+              Unlock Premium
+            </button>
+          )}
+
+          
+        </div>)}
 
         <div className="score-settings">
           <h3>Results & scores</h3>
 
           <p className="settings-description">
-            Choose when scores appear in your calendar.
-            Perfect if you want to avoid spoilers.
+            Get game results automatically added to your
+            calendar, with flexible controls to avoid spoilers.
           </p>
 
-          <select
-            value={scoreDelay}
-            onChange={(e) =>
-              setScoreDelay(e.target.value)
-            }
-            className="week-select"
-          >
-            <option value="after">
-              After the game
-            </option>
-            <option value="12h">
-              12 hours after
-            </option>
-            <option value="24h">
-              24 hours after
-            </option>
-            <option value="never">
-              Never
-            </option>
-            <option value="live">
-              Live scores
-            </option>
-          </select>
+          {isPremium ? (
+            <select
+              value={scoreDelay}
+              onChange={(e) =>
+                setScoreDelay(e.target.value)
+              }
+              className="week-select"
+            >
+              <option value="after">
+                After the game
+              </option>
+              <option value="12h">
+                12 hours after
+              </option>
+              <option value="24h">
+                24 hours after
+              </option>
+              <option value="never">
+                Never
+              </option>
+              <option value="live">
+                Live scores
+              </option>
+            </select>
+          ) : (
+            <div className="premium-feature-locked">
+              🔒 Premium feature
+              <span>
+                Scores and results are available with Premium.
+              </span>
+            </div>
+          )}
         </div>
 
         <div className="score-settings">
@@ -336,18 +417,27 @@ function App() {
             calendar.
           </p>
 
-          <select
-            value={weeklyReport ? "on" : "off"}
-            onChange={(e) =>
-              setWeeklyReport(
-                e.target.value === "on"
-              )
-            }
-            className="week-select"
-          >
-            <option value="off">Off</option>
-            <option value="on">On</option>
-          </select>
+          {isPremium ? (
+            <select
+              value={weeklyReport ? "on" : "off"}
+              onChange={(e) =>
+                setWeeklyReport(
+                  e.target.value === "on"
+                )
+              }
+              className="week-select"
+            >
+              <option value="off">Off</option>
+              <option value="on">On</option>
+            </select>
+          ) : (
+            <div className="premium-feature-locked">
+              🔒 Premium feature
+              <span>
+                Weekly results reports are available with Premium.
+              </span>
+            </div>
+          )}
         </div>
 
         <button

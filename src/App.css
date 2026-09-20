@@ -449,3 +449,181 @@ select.week-select option {
 .footer p {
   margin: 4px 0;
 }
+
+.premium-message {
+  margin-top: 16px;
+  padding: 18px;
+  border-radius: 14px;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  text-align: center;
+}
+
+.premium-message strong {
+  display: block;
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+.premium-message p {
+  margin: 0 0 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #4b5563;
+}
+
+.premium-message button {
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.premium-message .premium-button {
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  margin: 0 0 8px;
+  border: none;
+  border-radius: 10px;
+  background: #111827;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  opacity: 1;
+}
+
+.premium-message .premium-button:hover {
+  opacity: 0.9;
+}
+
+.premium-message .premium-later-button {
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.premium-feature-locked {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.premium-feature-locked span {
+  display: block;
+  margin-top: 4px;
+  font-weight: 400;
+  color: #6b7280;
+}
+
+.premium-card {
+  margin-top: 24px;
+  padding: 22px;
+  border-radius: 16px;
+  background: #f9fafb;
+  border: 1px solid #d1d5db;
+  text-align: center;
+}
+
+.premium-card-badge {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: #111827;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.premium-card h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.premium-card-intro {
+  margin: 6px 0 16px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.premium-benefits {
+  text-align: left;
+  margin: 0 auto 18px;
+  max-width: 260px;
+}
+
+.premium-benefits div {
+  margin: 7px 0;
+  font-size: 14px;
+}
+
+.premium-price {
+  margin-bottom: 16px;
+}
+
+.premium-price strong {
+  font-size: 24px;
+}
+
+.premium-price span {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.premium-card-button {
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 10px;
+  background: #111827;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.premium-card-button:hover {
+  opacity: 0.9;
+}
+
+.premium-active {
+  padding: 10px;
+  border-radius: 10px;
+  background: #f3f4f6;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.plan-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 4px auto 20px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  color: #4b5563;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.plan-badge.premium {
+  background: #111827;
+  border-color: #111827;
+  color: #ffffff;
+}
