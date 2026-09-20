@@ -437,3 +437,15 @@ select.week-select option {
   margin-bottom: 22px;
 }
 
+.footer {
+  margin-top: 40px;
+  padding: 20px 10px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.footer p {
+  margin: 4px 0;
+}

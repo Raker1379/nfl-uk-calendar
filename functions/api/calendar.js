@@ -1,5 +1,6 @@
 
 import { DateTime } from "luxon";
+import { getNFLGames } from "./nfl-data.js";
 
 const teamNames = {
   ARI: "Arizona Cardinals",
@@ -68,17 +69,17 @@ export async function onRequest(context) {
     calendarName = `NFL UK Calendar — ${selectedTeamNames.length} Teams`;
   }
 
-  const response = await fetch(
-    "https://github.com/nflverse/nflverse-data/releases/download/schedules/games.csv"
-  );
+  let csv;
 
-  if (!response.ok) {
+    try {
+    csv = await getNFLGames();
+    } catch (error) {
+    console.error(error);
+
     return new Response("Unable to fetch NFL schedule", {
-      status: 500,
+        status: 500,
     });
-  }
-
-  const csv = await response.text();
+    }
 
   const lines = csv.trim().split("\n");
   const headers = lines[0].split(",");

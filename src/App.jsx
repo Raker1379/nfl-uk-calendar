@@ -536,6 +536,18 @@ function App() {
         )}
       </section>
 
+      <footer className="footer">
+        <p>
+          NFL Calendar is an independent fan-made service and is
+          not affiliated with or endorsed by the NFL or any NFL
+          team.
+        </p>
+
+        <p>
+          Schedule data provided by nflverse.
+        </p>
+      </footer>
+
     </div>
   );
 }
