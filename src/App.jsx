@@ -37,6 +37,12 @@ const teams = [
   { code: "WAS", name: "Washington Commanders" },
 ];
 
+function trackEvent(eventName) {
+  if (typeof window.gtag === "function") {
+    window.gtag("event", eventName);
+  }
+}
+
 function App() {
   const [isPremium, setIsPremium] = useState(false);
   const [showPremiumMessage, setShowPremiumMessage] =
@@ -55,6 +61,7 @@ function App() {
   const [error, setError] = useState("");
 
   const subscribeToCalendar = () => {
+  trackEvent("calendar_add");
     const params = new URLSearchParams();
 
     if (selectedTeams.length > 0) {
@@ -314,7 +321,10 @@ function App() {
               <button
                 type="button"
                 className="premium-button"
-                onClick={() => setIsPremium(true)}
+                onClick={() => {
+                  trackEvent("premium_prompt_unlock");
+                  setIsPremium(true);
+                }}
               >
                 Unlock Premium
               </button>
@@ -358,7 +368,10 @@ function App() {
             <button
               type="button"
               className="premium-card-button"
-              onClick={() => setIsPremium(true)}
+              onClick={() => {
+                trackEvent("premium_card_unlock");
+                setIsPremium(true);
+              }}
             >
               Unlock Premium
             </button>
