@@ -5,89 +5,180 @@ body {
   color: #111827;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 .app {
   max-width: 700px;
   margin: 0 auto;
-  padding: 24px 16px;
+  padding: 20px 16px 40px;
 }
 
-.header {
+/* HERO */
+
+.hero {
   background: #111827;
   color: white;
-  padding: 24px;
-  border-radius: 16px;
-  margin-bottom: 24px;
+  padding: 32px 24px;
+  border-radius: 20px;
+  margin-bottom: 28px;
 }
 
-.header h1 {
-  margin: 0 0 6px;
-  font-size: 28px;
-  color: white;
+.hero-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 7px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 18px;
 }
 
-.header p {
+.hero h1 {
   margin: 0;
-  opacity: 0.8;
+  font-size: 42px;
+  line-height: 1.05;
+  letter-spacing: -1.5px;
   color: white;
 }
 
-.section-title {
-  margin-bottom: 12px;
+.hero h1 span {
+  color: #60a5fa;
 }
 
-.game {
+.hero-text {
+  max-width: 520px;
+  margin: 18px 0 24px;
+  color: #d1d5db;
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+.hero-features {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  color: #e5e7eb;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* SETUP */
+
+.setup-section h2 {
+  margin: 0 0 10px;
+  font-size: 26px;
+  letter-spacing: -0.5px;
+}
+
+.intro-text {
+  color: #6b7280;
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+
+/* TEAM SELECTOR */
+
+.team-selector {
   background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.team-selector-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.team-selector-header h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.team-count {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.team-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.team-actions button {
+  border: none;
+  background: #f3f4f6;
+  color: #111827;
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.team-actions button:hover {
+  background: #e5e7eb;
+}
+
+.team-list {
+  display: grid;
+  gap: 6px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.team-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.team-option:hover {
+  background: #f9fafb;
+}
+
+.team-option input {
+  width: 18px;
+  height: 18px;
+}
+
+.team-option strong {
+  font-size: 14px;
+}
+
+/* SETTINGS */
+
+.score-settings {
+  background: white;
+  border: 1px solid #e5e7eb;
   border-radius: 16px;
   padding: 18px;
-  margin-bottom: 14px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
-  border: 1px solid #e5e7eb;
+  margin-bottom: 16px;
 }
 
-.game-date {
-  font-size: 13px;
-  font-weight: 600;
-  color: #6b7280;
-  margin-bottom: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-}
-
-.game-time {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 14px;
-}
-
-.matchup {
-  font-size: 17px;
-  font-weight: 600;
-  padding: 14px;
-  background: #f9fafb;
-  border-radius: 12px;
-}
-
-.score {
-  margin-top: 10px;
-  padding: 10px 14px;
-  background: #111827;
-  color: white;
-  border-radius: 10px;
+.score-settings h3 {
+  margin: 0 0 8px;
   font-size: 18px;
-  font-weight: 700;
-  text-align: center;
 }
 
-.status {
-  margin-top: 10px;
-  display: inline-block;
-  padding: 5px 10px;
-  background: #f3f4f6;
+.settings-description {
   color: #6b7280;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0 0 12px;
 }
+
+/* SELECTS */
 
 .week-select {
   width: 100%;
@@ -96,8 +187,120 @@ body {
   border: 1px solid #d1d5db;
   border-radius: 10px;
   background: white;
+  color: #111827;
   font-size: 16px;
 }
+
+select.week-select option {
+  color: #111827;
+  background: white;
+}
+
+/* SUBSCRIBE */
+
+.subscribe-button {
+  display: block;
+  width: 100%;
+  border: none;
+  background: #2563eb;
+  color: white;
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 17px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: transform 0.1s ease, opacity 0.1s ease;
+}
+
+.subscribe-button:hover {
+  opacity: 0.92;
+}
+
+.subscribe-button:active {
+  transform: scale(0.99);
+}
+
+.calendar-help {
+  text-align: center;
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0 0 24px;
+}
+
+/* GOOGLE CALENDAR PANEL */
+
+.calendar-options {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 20px;
+}
+
+.calendar-options h3 {
+  margin: 0 0 8px;
+}
+
+.calendar-options p {
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.calendar-options ol {
+  padding-left: 20px;
+  color: #374151;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.calendar-url {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+
+.close-button {
+  width: 100%;
+  border: none;
+  background: #f3f4f6;
+  color: #111827;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* SCHEDULE */
+
+.schedule-section {
+  margin-top: 28px;
+}
+
+.schedule-button {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  background: white;
+  color: #111827;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.schedule-button:hover {
+  background: #f9fafb;
+}
+
+/* GAME CARDS */
 
 .game {
   background: white;
@@ -105,7 +308,7 @@ body {
   padding: 18px;
   margin-bottom: 14px;
   border: 1px solid #e5e7eb;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 .game-date {
@@ -177,184 +380,60 @@ body {
   font-weight: 600;
 }
 
-.team-selector {
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 16px;
-  padding: 16px;
-  margin-bottom: 20px;
+/* MOBILE */
+
+@media (max-width: 600px) {
+  .app {
+    padding: 12px 12px 32px;
+  }
+
+  .hero {
+    padding: 26px 20px;
+    border-radius: 18px;
+  }
+
+  .hero h1 {
+    font-size: 36px;
+  }
+
+  .hero-text {
+    font-size: 16px;
+  }
+
+  .hero-features {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .setup-section h2 {
+    font-size: 24px;
+  }
+
+  .team-selector-header {
+    align-items: flex-start;
+  }
+
+  .team-actions {
+    flex-direction: column;
+  }
+
+  .team-actions button {
+    padding: 6px 9px;
+  }
+
+  .teams {
+    gap: 8px;
+  }
+
+  .team strong {
+    font-size: 15px;
+  }
 }
 
-.team-selector-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 14px;
+.brand {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  margin-bottom: 22px;
 }
 
-.team-selector-header h3 {
-  margin: 0;
-  font-size: 18px;
-}
-
-.team-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.team-actions button {
-  border: none;
-  background: #f3f4f6;
-  padding: 7px 10px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.team-list {
-  display: grid;
-  gap: 8px;
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-.team-option {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 9px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.team-option:hover {
-  background: #f9fafb;
-}
-
-.team-option input {
-  width: 18px;
-  height: 18px;
-}
-
-.team-option strong {
-  font-size: 14px;
-}
-
-.team-count {
-  margin: 4px 0 0;
-  font-size: 13px;
-  color: #6b7280;
-}
-
-.intro-text {
-  color: #6b7280;
-  margin-top: -4px;
-  margin-bottom: 20px;
-}
-
-.schedule-button {
-  width: 100%;
-  border: none;
-  background: #111827;
-  color: white;
-  padding: 14px;
-  border-radius: 10px;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  margin-bottom: 20px;
-}
-
-.schedule-button:hover {
-  opacity: 0.9;
-}
-
-.settings-description {
-  color: #6b7280;
-  font-size: 14px;
-  line-height: 1.5;
-  margin-top: -6px;
-  margin-bottom: 12px;
-}
-
-.subscribe-button {
-  width: 100%;
-  border: none;
-  background: #2563eb;
-  color: white;
-  padding: 15px;
-  border-radius: 10px;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  margin-bottom: 12px;
-}
-
-.subscribe-button:hover {
-  opacity: 0.9;
-}
-
-select.week-select {
-  color: #111827;
-  background: white;
-  border: 1px solid #d1d5db;
-}
-
-select.week-select option {
-  color: #111827;
-  background: white;
-}
-
-.calendar-help {
-  text-align: center;
-  color: #6b7280;
-  font-size: 13px;
-  line-height: 1.5;
-  margin: 0 0 20px;
-}
-
-.calendar-options {
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 16px;
-  padding: 18px;
-  margin-bottom: 20px;
-}
-
-.calendar-options h3 {
-  margin-top: 0;
-  margin-bottom: 8px;
-}
-
-.calendar-options p {
-  color: #6b7280;
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-.calendar-options ol {
-  padding-left: 20px;
-  color: #374151;
-  font-size: 14px;
-  line-height: 1.7;
-}
-
-.close-button {
-  width: 100%;
-  border: none;
-  background: #f3f4f6;
-  color: #111827;
-  padding: 12px;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.subscribe-button {
-  display: block;
-  box-sizing: border-box;
-  text-align: center;
-  text-decoration: none;
-}

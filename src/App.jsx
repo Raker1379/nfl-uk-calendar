@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { getSchedule } from "./api";
 import "./App.css";
@@ -53,37 +52,37 @@ function App() {
   const [error, setError] = useState("");
 
   const subscribeToCalendar = () => {
-  const params = new URLSearchParams();
+    const params = new URLSearchParams();
 
-  if (selectedTeams.length > 0) {
-    params.set("teams", selectedTeams.join(","));
-  }
+    if (selectedTeams.length > 0) {
+      params.set("teams", selectedTeams.join(","));
+    }
 
-  params.set("delay", scoreDelay);
-  params.set(
-    "weekly",
-    weeklyReport ? "true" : "false"
-  );
+    params.set("delay", scoreDelay);
+    params.set(
+      "weekly",
+      weeklyReport ? "true" : "false"
+    );
 
-  const calendarUrl =
-    `${window.location.origin}/api/calendar?${params.toString()}`;
+    const calendarUrl =
+      `${window.location.origin}/api/calendar?${params.toString()}`;
 
-  const webcalUrl = calendarUrl.replace(
-    /^https?:\/\//,
-    "webcal://"
-  );
+    const webcalUrl = calendarUrl.replace(
+      /^https?:\/\//,
+      "webcal://"
+    );
 
-  const isAndroid =
-    /Android/i.test(navigator.userAgent);
+    const isAndroid =
+      /Android/i.test(navigator.userAgent);
 
-  if (isAndroid) {
-    setCalendarUrl(calendarUrl);
-    setShowCalendarOptions(true);
-    return;
-  }
+    if (isAndroid) {
+      setCalendarUrl(calendarUrl);
+      setShowCalendarOptions(true);
+      return;
+    }
 
-  window.location.href = webcalUrl;
-};
+    window.location.href = webcalUrl;
+  };
 
   useEffect(() => {
     getSchedule()
@@ -172,352 +171,371 @@ function App() {
 
   return (
     <div className="app">
-      <div className="header">
-        <h1>NFL UK Calendar</h1>
-        <p>2026 NFL Season</p>
-      </div>
 
-      <h2 className="section-title">
-        Build your NFL calendar
-      </h2>
+      <section className="hero">
+        <div className="brand">
+          NFL Calendar
+        </div>
+        
+        <div className="hero-badge">
+          🌎 Built for NFL fans around the world
+        </div>
 
-      <p className="intro-text">
-        Choose the teams you want to follow.
-      </p>
+        <h1>
+          NFL games.
+          <br />
+          <span>In your calendar.</span>
+        </h1>
 
-      <div className="team-selector">
-        <div className="team-selector-header">
-          <div>
-            <h3>Teams</h3>
+        <p className="hero-text">
+          Follow the NFL, with your favourite
+          teams automatically added to your calendar.
+        </p>
 
-            <p className="team-count">
-              {selectedTeams.length === 0
-                ? "All teams"
-                : `${selectedTeams.length} team${
-                    selectedTeams.length === 1
-                      ? ""
-                      : "s"
-                  } selected`}
-            </p>
+        <div className="hero-features">
+          <div>✓ Kickoffs in your local time</div>
+          <div>✓ Apple & Google Calendar</div>
+          <div>✓ Spoiler-free scores</div>
+          <div>✓ Weekly results</div>
+        </div>
+
+
+      </section>
+
+      <section className="setup-section">
+        <h2>Build your NFL calendar</h2>
+
+        <p className="intro-text">
+          Choose the teams you want to follow, then
+          subscribe to your personalised calendar.
+        </p>
+
+        <div className="team-selector">
+          <div className="team-selector-header">
+            <div>
+              <h3>Teams</h3>
+
+              <p className="team-count">
+                {selectedTeams.length === 0
+                  ? "All teams"
+                  : `${selectedTeams.length} team${
+                      selectedTeams.length === 1
+                        ? ""
+                        : "s"
+                    } selected`}
+              </p>
+            </div>
+
+            <div className="team-actions">
+              <button
+                type="button"
+                onClick={() =>
+                  setSelectedTeams(
+                    teams.map((team) => team.code)
+                  )
+                }
+              >
+                Select all
+              </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setSelectedTeams([])
+                }
+              >
+                Clear
+              </button>
+            </div>
           </div>
 
-          <div className="team-actions">
-            <button
-              type="button"
-              onClick={() =>
-                setSelectedTeams(
-                  teams.map((team) => team.code)
-                )
-              }
-            >
-              Select all
-            </button>
+          <div className="team-list">
+            {teams.map((team) => (
+              <label
+                className="team-option"
+                key={team.code}
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedTeams.includes(
+                    team.code
+                  )}
+                  onChange={() => {
+                    setSelectedTeams((current) =>
+                      current.includes(team.code)
+                        ? current.filter(
+                            (code) =>
+                              code !== team.code
+                          )
+                        : [
+                            ...current,
+                            team.code,
+                          ]
+                    );
+                  }}
+                />
 
-            <button
-              type="button"
-              onClick={() =>
-                setSelectedTeams([])
-              }
-            >
-              Clear
-            </button>
+                <span>
+                  <strong>{team.code}</strong>{" "}
+                  — {team.name}
+                </span>
+              </label>
+            ))}
           </div>
         </div>
 
-        <div className="team-list">
-          {teams.map((team) => (
-            <label
-              className="team-option"
-              key={team.code}
-            >
-              <input
-                type="checkbox"
-                checked={selectedTeams.includes(
-                  team.code
-                )}
-                onChange={() => {
-                  setSelectedTeams((current) =>
-                    current.includes(team.code)
-                      ? current.filter(
-                          (code) =>
-                            code !== team.code
-                        )
-                      : [
-                          ...current,
-                          team.code,
-                        ]
-                  );
-                }}
-              />
+        <div className="score-settings">
+          <h3>Results & scores</h3>
 
-              <span>
-                <strong>{team.code}</strong>{" "}
-                — {team.name}
-              </span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      <div className="score-settings">
-        <h3>Results & scores</h3>
-
-        <p className="settings-description">
-          Choose when scores appear in your calendar.
-          Perfect if you want to avoid spoilers.
-        </p>
-
-        <select
-          value={scoreDelay}
-          onChange={(e) =>
-            setScoreDelay(e.target.value)
-          }
-          className="week-select"
-        >
-          <option value="after">
-            After the game
-          </option>
-
-          <option value="12h">
-            12 hours after
-          </option>
-
-          <option value="24h">
-            24 hours after
-          </option>
-
-          <option value="never">
-            Never
-          </option>
-
-          <option value="live">
-            Live scores
-          </option>
-        </select>
-      </div>
-
-      <div className="score-settings">
-        <h3>Weekly results report</h3>
-
-        <p className="settings-description">
-          Add a summary of the week's results to your
-          calendar.
-        </p>
-
-        <select
-          value={weeklyReport ? "on" : "off"}
-          onChange={(e) =>
-            setWeeklyReport(
-              e.target.value === "on"
-            )
-          }
-          className="week-select"
-        >
-          <option value="off">Off</option>
-          <option value="on">On</option>
-        </select>
-      </div>
-
-     <a
-  href={
-    (() => {
-      const params = new URLSearchParams();
-
-      if (selectedTeams.length > 0) {
-        params.set(
-          "teams",
-          selectedTeams.join(",")
-        );
-      }
-
-      params.set("delay", scoreDelay);
-      params.set(
-        "weekly",
-        weeklyReport ? "true" : "false"
-      );
-
-      return `webcal://${window.location.host}/api/calendar?${params.toString()}`;
-    })()
-  }
-  className="subscribe-button"
-  onClick={(e) => {
-    const isAndroid =
-      /Android/i.test(navigator.userAgent);
-
-    if (isAndroid) {
-      e.preventDefault();
-      subscribeToCalendar();
-    }
-  }}
->
-  Add to my calendar
-</a>
-
-      <p className="calendar-help">
-        Works with Apple Calendar, Google Calendar
-        and other calendar apps.
-      </p>
-
-      {showCalendarOptions && (
-        <div className="calendar-options">
-          <h3>Add to Google Calendar</h3>
-
-          <p>
-            Google Calendar requires calendar subscriptions
-            to be added from the web.
+          <p className="settings-description">
+            Choose when scores appear in your calendar.
+            Perfect if you want to avoid spoilers.
           </p>
 
-          <ol>
-            <li>Copy your personalised calendar link.</li>
-            <li>Open Google Calendar in a web browser.</li>
-            <li>Choose Other calendars → + → From URL.</li>
-            <li>Paste the link and add the calendar.</li>
-          </ol>
-
-          <input
-            type="text"
-            value={calendarUrl}
-            readOnly
-            className="calendar-url"
-          />
-
-          <button
-            type="button"
-            className="subscribe-button"
-            onClick={() =>
-              navigator.clipboard.writeText(calendarUrl)
-            }
-          >
-            Copy calendar link
-          </button>
-
-          <button
-            type="button"
-            className="close-button"
-            onClick={() =>
-              setShowCalendarOptions(false)
-            }
-          >
-            Close
-          </button>
-        </div>
-      )}
-
-      <button
-        type="button"
-        className="schedule-button"
-        onClick={() =>
-          setShowSchedule((current) => !current)
-        }
-      >
-        {showSchedule
-          ? "Hide schedule"
-          : "View schedule"}
-      </button>
-
-      {showSchedule && (
-        <>
           <select
-            value={activeWeek}
+            value={scoreDelay}
             onChange={(e) =>
-              setSelectedWeek(e.target.value)
+              setScoreDelay(e.target.value)
             }
             className="week-select"
           >
-            <option value="all">
-              All Weeks
+            <option value="after">
+              After the game
             </option>
-
-            {weeks.map((week) => (
-              <option
-                key={week}
-                value={week}
-              >
-                Week {week}
-              </option>
-            ))}
+            <option value="12h">
+              12 hours after
+            </option>
+            <option value="24h">
+              24 hours after
+            </option>
+            <option value="never">
+              Never
+            </option>
+            <option value="live">
+              Live scores
+            </option>
           </select>
+        </div>
 
-          {loading && (
-            <p>Loading NFL fixtures...</p>
-          )}
+        <div className="score-settings">
+          <h3>Weekly results report</h3>
 
-          {error && <p>{error}</p>}
+          <p className="settings-description">
+            Add a summary of the week's results to your
+            calendar.
+          </p>
 
-          {!loading &&
-            !error &&
-            filteredGames.map((game) => (
-              <div
-                className="game"
-                key={game.game_id}
-              >
-                <div className="game-date">
-                  {new Date(
-                    game.kickoff_utc
-                  ).toLocaleDateString(
-                    "en-GB",
-                    {
-                      weekday: "short",
-                      day: "numeric",
-                      month: "short",
-                      timeZone: "Europe/London",
-                    }
+          <select
+            value={weeklyReport ? "on" : "off"}
+            onChange={(e) =>
+              setWeeklyReport(
+                e.target.value === "on"
+              )
+            }
+            className="week-select"
+          >
+            <option value="off">Off</option>
+            <option value="on">On</option>
+          </select>
+        </div>
+
+        <button
+          type="button"
+          className="subscribe-button"
+          onClick={subscribeToCalendar}
+        >
+          Add to my calendar
+        </button>
+
+        <p className="calendar-help">
+          Works with Apple Calendar, Google Calendar
+          and other calendar apps.
+        </p>
+
+        {showCalendarOptions && (
+          <div className="calendar-options">
+            <h3>Add to Google Calendar</h3>
+
+            <p>
+              Google Calendar requires calendar
+              subscriptions to be added from the web.
+            </p>
+
+            <ol>
+              <li>
+                Copy your personalised calendar link.
+              </li>
+              <li>
+                Open Google Calendar in a web browser.
+              </li>
+              <li>
+                Choose Other calendars → + → From URL.
+              </li>
+              <li>
+                Paste the link and add the calendar.
+              </li>
+            </ol>
+
+            <input
+              type="text"
+              value={calendarUrl}
+              readOnly
+              className="calendar-url"
+            />
+
+            <button
+              type="button"
+              className="subscribe-button"
+              onClick={() => {
+                navigator.clipboard.writeText(
+                  calendarUrl
+                );
+
+                setCopied(true);
+
+                setTimeout(() => {
+                  setCopied(false);
+                }, 2000);
+              }}
+            >
+              {copied
+                ? "Copied!"
+                : "Copy calendar link"}
+            </button>
+
+            <button
+              type="button"
+              className="close-button"
+              onClick={() =>
+                setShowCalendarOptions(false)
+              }
+            >
+              Close
+            </button>
+          </div>
+        )}
+      </section>
+
+      <section className="schedule-section">
+        <button
+          type="button"
+          className="schedule-button"
+          onClick={() =>
+            setShowSchedule((current) => !current)
+          }
+        >
+          {showSchedule
+            ? "Hide schedule"
+            : "View NFL schedule"}
+        </button>
+
+        {showSchedule && (
+          <>
+            <select
+              value={activeWeek}
+              onChange={(e) =>
+                setSelectedWeek(e.target.value)
+              }
+              className="week-select"
+            >
+              <option value="all">
+                All Weeks
+              </option>
+
+              {weeks.map((week) => (
+                <option
+                  key={week}
+                  value={week}
+                >
+                  Week {week}
+                </option>
+              ))}
+            </select>
+
+            {loading && (
+              <p>Loading NFL fixtures...</p>
+            )}
+
+            {error && <p>{error}</p>}
+
+            {!loading &&
+              !error &&
+              filteredGames.map((game) => (
+                <div
+                  className="game"
+                  key={game.game_id}
+                >
+                  <div className="game-date">
+                    {new Date(
+                      game.kickoff_utc
+                    ).toLocaleDateString(
+                      "en-GB",
+                      {
+                        weekday: "short",
+                        day: "numeric",
+                        month: "short",
+                        timeZone:
+                          "Europe/London",
+                      }
+                    )}
+                  </div>
+
+                  <div className="game-time">
+                    {new Date(
+                      game.kickoff_utc
+                    ).toLocaleTimeString(
+                      "en-GB",
+                      {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        timeZone:
+                          "Europe/London",
+                      }
+                    )}
+                  </div>
+
+                  <div className="teams">
+                    <div className="team">
+                      <strong>
+                        {game.away_team}
+                      </strong>
+
+                      <span>Away</span>
+                    </div>
+
+                    <div className="at">
+                      @
+                    </div>
+
+                    <div className="team">
+                      <strong>
+                        {game.home_team}
+                      </strong>
+
+                      <span>Home</span>
+                    </div>
+                  </div>
+
+                  {shouldShowScore(game) ? (
+                    <div className="score">
+                      {game.away_score} -{" "}
+                      {game.home_score}
+                    </div>
+                  ) : scoreDelay === "never" ? (
+                    <div className="status">
+                      Score hidden
+                    </div>
+                  ) : (
+                    <div className="status">
+                      Upcoming
+                    </div>
                   )}
                 </div>
+              ))}
+          </>
+        )}
+      </section>
 
-                <div className="game-time">
-                  {new Date(
-                    game.kickoff_utc
-                  ).toLocaleTimeString(
-                    "en-GB",
-                    {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      timeZone: "Europe/London",
-                    }
-                  )}
-                </div>
-
-                <div className="teams">
-                  <div className="team">
-                    <strong>
-                      {game.away_team}
-                    </strong>
-
-                    <span>Away</span>
-                  </div>
-
-                  <div className="at">
-                    @
-                  </div>
-
-                  <div className="team">
-                    <strong>
-                      {game.home_team}
-                    </strong>
-
-                    <span>Home</span>
-                  </div>
-                </div>
-
-                {shouldShowScore(game) ? (
-                  <div className="score">
-                    {game.away_score} -{" "}
-                    {game.home_score}
-                  </div>
-                ) : scoreDelay === "never" ? (
-                  <div className="status">
-                    Score hidden
-                  </div>
-                ) : (
-                  <div className="status">
-                    Upcoming
-                  </div>
-                )}
-              </div>
-            ))}
-        </>
-      )}
     </div>
   );
 }
