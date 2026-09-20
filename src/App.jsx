@@ -46,7 +46,7 @@ function trackEvent(eventName) {
 function App() {
   const [isPremium, setIsPremium] = useState(false);
   const [showPremiumMessage, setShowPremiumMessage] =
-  useState(false);
+    useState(false);
   const [games, setGames] = useState([]);
   const [selectedWeek, setSelectedWeek] = useState(null);
   const [selectedTeams, setSelectedTeams] = useState([]);
@@ -59,9 +59,25 @@ function App() {
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [analyticsConsent, setAnalyticsConsent] = useState(
+    localStorage.getItem("analyticsConsent")
+  );
+
+  function updateAnalyticsConsent(choice) {
+    localStorage.setItem("analyticsConsent", choice);
+    setAnalyticsConsent(choice);
+
+    if (typeof window.gtag === "function") {
+      window.gtag("consent", "update", {
+        analytics_storage:
+          choice === "accepted" ? "granted" : "denied",
+      });
+    }
+  }
 
   const subscribeToCalendar = () => {
-  trackEvent("calendar_add");
+    trackEvent("calendar_add");
+
     const params = new URLSearchParams();
 
     if (selectedTeams.length > 0) {
@@ -137,7 +153,6 @@ function App() {
     selectedWeek ?? currentWeek;
 
   const filteredGames = games.filter((game) => {
-    
     const matchesWeek =
       activeWeek === "all" ||
       game.week === activeWeek;
@@ -187,7 +202,7 @@ function App() {
         <div className="brand">
           NFL Calendar
         </div>
-        
+
         <div className="hero-badge">
           🌎 Built for NFL fans around the world
         </div>
@@ -209,8 +224,6 @@ function App() {
           <div>✓ Spoiler-free scores</div>
           <div>✓ Weekly results</div>
         </div>
-
-
       </section>
 
       <section className="setup-section">
@@ -292,10 +305,13 @@ function App() {
                         );
                       }
 
-                      if (!isPremium && current.length >= 1) {
-                            setShowPremiumMessage(true);
-                            return current;
-                          }
+                      if (
+                        !isPremium &&
+                        current.length >= 1
+                      ) {
+                        setShowPremiumMessage(true);
+                        return current;
+                      }
 
                       return [...current, team.code];
                     });
@@ -309,6 +325,7 @@ function App() {
               </label>
             ))}
           </div>
+
           {showPremiumMessage && !isPremium && (
             <div className="premium-message">
               <strong>Unlock Premium</strong>
@@ -332,7 +349,9 @@ function App() {
               <button
                 type="button"
                 className="premium-later-button"
-                onClick={() => setShowPremiumMessage(false)}
+                onClick={() =>
+                  setShowPremiumMessage(false)
+                }
               >
                 Maybe later
               </button>
@@ -341,44 +360,43 @@ function App() {
         </div>
 
         {!isPremium && (
-        <div className="premium-card">
-          <div className="premium-card-badge">
-            PREMIUM
+          <div className="premium-card">
+            <div className="premium-card-badge">
+              PREMIUM
+            </div>
+
+            <h3>NFL Calendar Premium</h3>
+
+            <p className="premium-card-intro">
+              Follow the NFL your way.
+            </p>
+
+            <div className="premium-benefits">
+              <div>✓ Multiple teams</div>
+              <div>✓ Full NFL calendar</div>
+              <div>✓ Scores & results</div>
+              <div>✓ Weekly results reports</div>
+            </div>
+
+            <div className="premium-price">
+              <strong>£9.99</strong>
+              <span>/ year</span>
+            </div>
+
+            {!isPremium && (
+              <button
+                type="button"
+                className="premium-card-button"
+                onClick={() => {
+                  trackEvent("premium_card_unlock");
+                  setIsPremium(true);
+                }}
+              >
+                Unlock Premium
+              </button>
+            )}
           </div>
-
-          <h3>NFL Calendar Premium</h3>
-
-          <p className="premium-card-intro">
-            Follow the NFL your way.
-          </p>
-
-          <div className="premium-benefits">
-            <div>✓ Multiple teams</div>
-            <div>✓ Full NFL calendar</div>
-            <div>✓ Scores & results</div>
-            <div>✓ Weekly results reports</div>
-          </div>
-
-          <div className="premium-price">
-            <strong>£9.99</strong>
-            <span>/ year</span>
-          </div>
-
-          {!isPremium && (
-            <button
-              type="button"
-              className="premium-card-button"
-              onClick={() => {
-                trackEvent("premium_card_unlock");
-                setIsPremium(true);
-              }}
-            >
-              Unlock Premium
-            </button>
-          )}
-
-          
-        </div>)}
+        )}
 
         <div className="score-settings">
           <h3>Results & scores</h3>
@@ -457,7 +475,9 @@ function App() {
           type="button"
           className="subscribe-button"
           onClick={subscribeToCalendar}
-          disabled={selectedTeams.length === 0 && !isPremium}
+          disabled={
+            selectedTeams.length === 0 && !isPremium
+          }
         >
           {selectedTeams.length === 0 && !isPremium
             ? "Choose a team to continue"
@@ -665,9 +685,41 @@ function App() {
         </p>
       </footer>
 
+      {!analyticsConsent && (
+        <div className="consent-banner">
+          <div className="consent-banner-text">
+            <strong>Privacy & analytics</strong>
+
+            <p>
+              We use analytics to understand how people use NFL
+              Calendar and improve the service.
+            </p>
+          </div>
+
+          <div className="consent-banner-actions">
+            <button
+              type="button"
+              onClick={() =>
+                updateAnalyticsConsent("accepted")
+              }
+            >
+              Accept analytics
+            </button>
+
+            <button
+              type="button"
+              className="consent-decline"
+              onClick={() =>
+                updateAnalyticsConsent("declined")
+              }
+            >
+              Decline
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 export default App;
-

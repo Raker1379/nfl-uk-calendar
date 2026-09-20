@@ -627,3 +627,60 @@ select.week-select option {
   border-color: #111827;
   color: #ffffff;
 }
+
+/* Privacy & analytics consent */
+
+.consent-banner {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  z-index: 1000;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.consent-banner-text strong {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 15px;
+}
+
+.consent-banner-text p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.consent-banner-actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.consent-banner-actions button {
+  padding: 9px 14px;
+  border: none;
+  border-radius: 8px;
+  background: #111827;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.consent-banner-actions .consent-decline {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.consent-banner-actions button:hover {
+  opacity: 0.9;
+}
