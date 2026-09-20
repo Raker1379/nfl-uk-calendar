@@ -229,7 +229,7 @@ function App() {
 
               <p className="team-count">
                 {selectedTeams.length === 0
-                  ? "All teams"
+                  ? "No team selected"
                   : `${selectedTeams.length} team${
                       selectedTeams.length === 1
                         ? ""
@@ -444,8 +444,11 @@ function App() {
           type="button"
           className="subscribe-button"
           onClick={subscribeToCalendar}
+          disabled={selectedTeams.length === 0 && !isPremium}
         >
-          Add to my calendar
+          {selectedTeams.length === 0 && !isPremium
+            ? "Choose a team to continue"
+            : "Add to my calendar"}
         </button>
 
         <p className="calendar-help">
